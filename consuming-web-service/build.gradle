@@ -1,0 +1,86 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.darrylion'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+// tag::configurations[]
+configurations {
+    jaxb
+}
+// end::configurations[]
+
+repositories {
+    mavenCentral()
+}
+
+// tag::wsdl[]
+task genJaxb {
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
+    ext.classesDir = "${buildDir}/classes/jaxb"
+    ext.schema = "http://localhost:8080/ws/patients.wsdl"
+
+    outputs.dir classesDir
+
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask",
+                    classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
+            mkdir(dir: classesDir)
+
+            xjc(destdir: sourcesDir, schema: schema,
+                    package: "com.darrylion.consumingwebservice.wsdl") {
+                arg(value: "-wsdl")
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+
+            javac(destdir: classesDir, source: 1.8, target: 1.8, debug: true,
+                    debugLevel: "lines,vars,source",
+                    classpath: configurations.jaxb.asPath) {
+                src(path: sourcesDir)
+                include(name: "**/*.java")
+                include(name: "*.java")
+            }
+
+            copy(todir: classesDir) {
+                fileset(dir: sourcesDir, erroronmissingdir: false) {
+                    exclude(name: "**/*.java")
+                }
+            }
+        }
+    }
+}
+// end::wsdl[]
+
+task prepareKotlinBuildScriptModel {
+
+}
+
+dependencies {
+    implementation ('org.springframework.boot:spring-boot-starter-web-services') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+    implementation 'org.springframework.ws:spring-ws-core'
+    // For Java 11:
+    implementation 'org.glassfish.jaxb:jaxb-runtime'
+    implementation(files(genJaxb.classesDir).builtBy(genJaxb))
+
+    jaxb "com.sun.xml.bind:jaxb-xjc:2.1.7"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// tag::bootjar[]
+bootJar {
+    baseName = 'consuming-web-service'
+    version =  '0.0.1-SNAPSHOT'
+}
+// end::bootjar[]

@@ -1,0 +1,54 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://darrylion.org/producing-web-service"
+           targetNamespace="http://darrylion.org/producing-web-service" elementFormDefault="qualified">
+
+    <xs:element name="getPatientRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getPatientResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="patient" type="tns:patient"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="createPatientRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="patient" type="tns:patient"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updatePatientRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="patient" type="tns:patient"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="deletePatientRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="patient">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="firstName" type="xs:string"/>
+            <xs:element name="patronymic" type="xs:string"/>
+            <xs:element name="birthday" type="xs:string"/>
+            <xs:element name="termPolicy" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

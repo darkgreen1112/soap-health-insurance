@@ -1,0 +1,4 @@
+rootProject.name = 'soap-health-insurance'
+include 'producing-web-service'
+include 'consuming-web-service'
+
